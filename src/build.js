@@ -73,6 +73,9 @@ const OLD_SCRAMJET_SCOPE = "/uv/scramjet/";
 
 const RETIRED_PUBLIC_PREFIXES = ["/assets/ultraviolet/", "/assets/scramjet/", "/epoxy/", "/libcurl/", "/baremux/"];
 
+// External scripts provided by hosting platforms at runtime (not part of the build)
+const EXTERNAL_RUNTIME_SCRIPTS = ["/_vercel/insights/script.js"];
+
 const WORDS =
   "api lib src net sys io pkg app mod ext math calc units matrix vector scalar ratio delta sigma alpha beta gamma omega phi theta core util data base node tree heap stack queue graph hash map set list ring chain parse fmt log proc exec init boot load sync async fetch emit bind wrap pool fork dictionary mapping resolver adapter encoder decoder scheduler dispatcher observer registry factory builder transform pipeline middleware handler router broker storage cache buffer stream channel socket bridge monitor profiler tracer validator sanitizer 1 2 3 v1 v2 v3 that was my part of the deal honest we got so familiar spending each day of the year white ferrari good times".split(
     " ",
@@ -1320,6 +1323,8 @@ async function verifyBuild({ manifest, specs, emitted, references, distJsFiles, 
 
     for (const [, literal] of source.matchAll(/["'`](\/[A-Za-z0-9_\-./]*\.(?:js|mjs|wasm))["'`]/g)) {
       checkedReferences++;
+      // Skip external runtime scripts provided by hosting platforms
+      if (EXTERNAL_RUNTIME_SCRIPTS.includes(literal)) continue;
       if (!emittedPaths.has(literal)) failures.push(`${file} references ${literal}, which is not an emitted manifest path`);
     }
   }
